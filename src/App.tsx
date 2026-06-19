@@ -463,7 +463,6 @@ export default function App() {
       setBrowserSearchQuery('');
       setBrowserResults([]);
       setInputUrl('');
-      triggerSuccessFlash('Switched to Ads-Alis YouTube Direct Browser!');
       return;
     }
 
@@ -475,12 +474,10 @@ export default function App() {
       setVideoTitle(parsed.title);
       addToHistory(parsed.id, parsed.title, parsed.type, parsed.embedUrl);
       setInputUrl('');
-      triggerSuccessFlash(`Successfully loaded direct ${parsed.type.toUpperCase()} link!`);
     } else {
       // Treat as search/browse action inside our ad-free browser
       runBrowserSearch(query);
       setInputUrl('');
-      triggerSuccessFlash(`Searching YouTube for: "${query}"`);
     }
   };
 
@@ -553,7 +550,6 @@ export default function App() {
     setEmbedUrl(item.embedUrl);
     setVideoTitle(item.title);
     addToHistory(item.id, item.title, item.sourceType, item.embedUrl);
-    triggerSuccessFlash(`Streaming ${item.title}`);
   };
 
   // UI badge generator per platform
@@ -814,7 +810,6 @@ export default function App() {
                           setEmbedUrl(`https://www.youtube-nocookie.com/embed/${video.id}?${params}`);
                           setVideoTitle(video.title);
                           addToHistory(video.id, video.title, 'youtube', `https://www.youtube-nocookie.com/embed/${video.id}?${params}`);
-                          triggerSuccessFlash(`Loading Ad-Free Stream: "${video.title}"`);
                         }}
                         className="bg-slate-900/40 hover:bg-slate-900 border border-slate-850/60 hover:border-amber-500/25 rounded-xl overflow-hidden transition cursor-pointer group flex flex-col h-full shadow-lg"
                       >
@@ -1019,7 +1014,6 @@ export default function App() {
                               setEmbedUrl(`https://www.youtube-nocookie.com/embed/${video.id}?${params}`);
                               setVideoTitle(video.title);
                               addToHistory(video.id, video.title, 'youtube', `https://www.youtube-nocookie.com/embed/${video.id}?${params}`);
-                              triggerSuccessFlash(`Loading Ad-Free Stream: "${video.title}"`);
                             }}
                             className={`flex flex-row gap-2.5 p-2 rounded-xl border transition cursor-pointer group ${
                               isCurrentlyPlaying
