@@ -25,8 +25,11 @@ import {
   Cpu,
   CloudRain,
   Tv,
-  Menu
+  Menu,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
+import YouTube from 'react-youtube';
 
 // Stream source type definitions
 type SupportPlatform = 'youtube' | 'vimeo' | 'dailymotion' | 'direct' | 'generic';
@@ -93,8 +96,6 @@ export default function App() {
   const [sourceType, setSourceType] = useState<SupportPlatform>('youtube');
   const [embedUrl, setEmbedUrl] = useState('');
   
-  const [successMsg, setSuccessMsg] = useState('');
-  
   // User lists
   const [favorites, setFavorites] = useState<SavedVideo[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -109,6 +110,7 @@ export default function App() {
   const [browserResults, setBrowserResults] = useState<YouTubeBrowserVideo[]>([]);
   const [browserSearchInput, setBrowserSearchInput] = useState('');
   const [isBrowserLoading, setIsBrowserLoading] = useState(false);
+  const [autoPlayNext, setAutoPlayNext] = useState(true);
 
   // Trending videos states
   const [trendingVideos, setTrendingVideos] = useState<YouTubeBrowserVideo[]>([]);
@@ -481,11 +483,21 @@ export default function App() {
     }
   };
 
-  const triggerSuccessFlash = (message: string) => {
-    setSuccessMsg(message);
-    setTimeout(() => {
-      setSuccessMsg('');
-    }, 2800);
+  const handleVideoEnd = () => {
+    if (!autoPlayNext) return;
+    
+    const listToSearch = browserSearchQuery ? browserResults : trendingVideos;
+    if (listToSearch.length === 0) return;
+    
+    const currentIndex = listToSearch.findIndex(v => v.id === currentVideoId);
+    if (currentIndex >= 0 && currentIndex < listToSearch.length - 1) {
+      const nextVideo = listToSearch[currentIndex + 1];
+      setCurrentVideoId(nextVideo.id);
+      setVideoTitle(nextVideo.title);
+      setSourceType('youtube');
+      setEmbedUrl(`https://www.youtube-nocookie.com/embed/${nextVideo.id}?autoplay=1&modestbranding=1&rel=0`);
+      addToHistory(nextVideo.id, nextVideo.title, 'youtube', `https://www.youtube-nocookie.com/embed/${nextVideo.id}?autoplay=1&modestbranding=1&rel=0`);
+    }
   };
 
   const addToHistory = (id: string, title: string, type: SupportPlatform, embed: string) => {
@@ -500,7 +512,6 @@ export default function App() {
     if (isFav) {
       const updated = favorites.filter(fav => fav.id !== currentVideoId);
       saveFavoritesToStorage(updated);
-      triggerSuccessFlash('Stream removed from bookmarks');
     } else {
       const updated = [
         ...favorites,
@@ -513,7 +524,6 @@ export default function App() {
         }
       ];
       saveFavoritesToStorage(updated);
-      triggerSuccessFlash('Successfully added to Bookmarks!');
     }
   };
 
@@ -534,7 +544,6 @@ export default function App() {
     if (trimmed) {
       const updated = favorites.map(fav => fav.id === id ? { ...fav, title: trimmed } : fav);
       saveFavoritesToStorage(updated);
-      triggerSuccessFlash('Bookmark title updated successfully!');
     }
     setEditingFavId(null);
   };
@@ -684,14 +693,6 @@ export default function App() {
       {/* Main Grid Content */}
       <main id="main_content" className="w-full px-4 md:px-8 lg:px-12 py-6 md:py-8 relative z-10">
         
-        {/* Success Notifications */}
-        {successMsg && (
-          <div id="success_flash_notification" className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg py-2.5 px-4 mb-5 text-xs flex items-center gap-2 animate-fade-in">
-            <Check className="h-3.5 w-3.5" />
-            <span className="font-medium">{successMsg}</span>
-          </div>
-        )}
-
         {/* Global Multi-Platform URL Input Terminal */}
         <section id="url_input_panel" className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 md:p-5 mb-6 shadow-sm">
           <form id="url_parse_form" onSubmit={handleLaunchVideo} className="flex flex-col sm:flex-row gap-3">
@@ -872,8 +873,25 @@ export default function App() {
                     loop
                     className="absolute inset-0 w-full h-full object-contain"
                   />
+                ) : sourceType === 'youtube' ? (
+                  /* REACT-YOUTUBE SECURED EMBED FOR AUTOPLAY EVENTS */
+                  <YouTube
+                    videoId={currentVideoId}
+                    className="absolute inset-0 w-full h-full"
+                    iframeClassName="absolute inset-0 w-full h-full border-0"
+                    opts={{
+                      width: '100%',
+                      height: '100%',
+                      playerVars: {
+                        autoplay: 1,
+                        modestbranding: 1,
+                        rel: 0,
+                      },
+                    }}
+                    onEnd={handleVideoEnd}
+                  />
                 ) : (
-                  /* STRICT PRIVACY SECURED SANDBOXED EMBED */
+                  /* GENERIC/OTHER SECURED SANDBOXED EMBED */
                   <iframe
                     key={currentVideoId}
                     id="sandbox_player_iframe"
@@ -911,9 +929,7 @@ export default function App() {
                     id="copy_clean_link_btn"
                     onClick={() => {
                       const cleanUrl = `${window.location.origin}?url=${encodeURIComponent(currentVideoId)}`;
-                      navigator.clipboard.writeText(cleanUrl).then(() => {
-                         triggerSuccessFlash('Copied clean shared link to clipboard!');
-                      });
+                      navigator.clipboard.writeText(cleanUrl);
                     }}
                     className="px-3 py-2 border border-slate-800 rounded-lg text-xs font-semibold text-slate-350 hover:bg-slate-800 hover:text-slate-100 flex items-center gap-1.5 transition"
                   >
@@ -942,24 +958,31 @@ export default function App() {
             <div id="right_search_browser_module" style={{ height: (isDesktop && playerCardHeight) ? `${playerCardHeight}px` : undefined }} className="lg:col-span-1 bg-slate-900 border border-slate-800/90 rounded-xl p-4 md:p-5 shadow-lg flex flex-col justify-stretch min-h-[350px]">
               <div className="flex flex-col flex-1 h-full overflow-hidden">
                 <div className="flex items-center justify-between gap-2 mb-4 shrink-0">
-                  <div>
+                  <div className="flex items-center gap-3">
                     <h3 className="text-xs md:text-sm font-bold text-white flex items-center gap-1.5">
                       <Tv className="h-4 w-4 text-amber-500 flex-shrink-0" />
                       {browserSearchQuery ? 'Related Search Results' : 'Featured Videos'}
                     </h3>
-                  </div>
-                  {browserSearchQuery && (
-                    <button 
-                      onClick={() => {
-                        setBrowserSearchQuery('');
-                        setBrowserResults([]);
-                        setBrowserSearchInput('');
-                      }}
-                      className="text-[10px] bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/15 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 font-semibold cursor-pointer whitespace-nowrap active:scale-95"
+                    
+                    {/* Auto-Play Next Toggle */}
+                    <button
+                      onClick={() => setAutoPlayNext(!autoPlayNext)}
+                      className="flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-md transition-colors hover:bg-slate-800"
+                      title={autoPlayNext ? "Disable Auto-Play Next" : "Enable Auto-Play Next"}
                     >
-                      <X className="h-2.5 w-2.5" /> Back to Featured
+                      {autoPlayNext ? (
+                        <>
+                          <ToggleRight className="h-5 w-5 text-emerald-400" />
+                          <span className="text-emerald-400">Auto-Play</span>
+                        </>
+                      ) : (
+                        <>
+                          <ToggleLeft className="h-5 w-5 text-slate-500" />
+                          <span className="text-slate-400">Auto-Play</span>
+                        </>
+                      )}
                     </button>
-                  )}
+                  </div>
                 </div>
 
                 {/* Sidebar Active List Scroll */}
