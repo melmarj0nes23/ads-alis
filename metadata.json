@@ -1,0 +1,6 @@
+{
+  "name": "Ads-Alis",
+  "description": "Stream YouTube, Vimeo, Dailymotion, and raw video files entirely free of ads, overlays, and tracking using sandbox-secured frames.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
