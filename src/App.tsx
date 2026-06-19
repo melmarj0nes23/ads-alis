@@ -957,32 +957,30 @@ export default function App() {
             {/* RIGHT PORTION: COMPACT SIDEBAR BROWSER & RECOMMENDATIONS (lg:col-span-1) */}
             <div id="right_search_browser_module" style={{ height: (isDesktop && playerCardHeight) ? `${playerCardHeight}px` : undefined }} className="lg:col-span-1 bg-slate-900 border border-slate-800/90 rounded-xl p-4 md:p-5 shadow-lg flex flex-col justify-stretch min-h-[350px]">
               <div className="flex flex-col flex-1 h-full overflow-hidden">
-                <div className="flex items-center justify-between gap-2 mb-4 shrink-0">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-xs md:text-sm font-bold text-white flex items-center gap-1.5">
-                      <Tv className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                      {browserSearchQuery ? 'Related Search Results' : 'Featured Videos'}
-                    </h3>
-                    
-                    {/* Auto-Play Next Toggle */}
-                    <button
-                      onClick={() => setAutoPlayNext(!autoPlayNext)}
-                      className="flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-md transition-colors hover:bg-slate-800"
-                      title={autoPlayNext ? "Disable Auto-Play Next" : "Enable Auto-Play Next"}
-                    >
-                      {autoPlayNext ? (
-                        <>
-                          <ToggleRight className="h-5 w-5 text-emerald-400" />
-                          <span className="text-emerald-400">Auto-Play</span>
-                        </>
-                      ) : (
-                        <>
-                          <ToggleLeft className="h-5 w-5 text-slate-500" />
-                          <span className="text-slate-400">Auto-Play</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                <div className="flex items-center justify-between gap-2 mb-4 shrink-0 w-full">
+                  <h3 className="text-xs md:text-sm font-bold text-white flex items-center gap-1.5">
+                    <Tv className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    {browserSearchQuery ? 'Related Search Results' : 'Featured Videos'}
+                  </h3>
+                  
+                  {/* Auto-Play Next Toggle */}
+                  <button
+                    onClick={() => setAutoPlayNext(!autoPlayNext)}
+                    className="flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-md transition-colors hover:bg-slate-800"
+                    title={autoPlayNext ? "Disable Auto-Play Next" : "Enable Auto-Play Next"}
+                  >
+                    {autoPlayNext ? (
+                      <>
+                        <ToggleRight className="h-5 w-5 text-emerald-400" />
+                        <span className="text-emerald-400">Auto-Play</span>
+                      </>
+                    ) : (
+                      <>
+                        <ToggleLeft className="h-5 w-5 text-slate-500" />
+                        <span className="text-slate-400">Auto-Play</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 {/* Sidebar Active List Scroll */}
