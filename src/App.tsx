@@ -705,7 +705,7 @@ export default function App() {
                 value={inputUrl}
                 onChange={(e) => setInputUrl(e.target.value)}
                 placeholder="Paste any YouTube link, Vimeo link, Dailymotion link, or raw Direct Media URL (.mp4)"
-                className="block w-full py-3.5 pl-10 pr-4 rounded-lg bg-slate-950 border border-slate-850 text-slate-200 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500"
+                className="block w-full py-3.5 pl-10 pr-4 rounded-lg bg-slate-950 border border-slate-850 text-slate-200 placeholder-slate-500 text-base focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500"
               />
             </div>
 
@@ -891,7 +891,6 @@ export default function App() {
                 <div id="active_meta_info" className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span id="playing_status_dot" className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-                    {renderPlatformBadge(sourceType)}
                   </div>
                   <h2 id="active_video_heading" className="text-sm md:text-base font-bold text-white mt-1.5 leading-snug truncate" title={videoTitle}>{videoTitle}</h2>
                   <p id="active_video_id_tag" className="text-[10px] text-slate-450 font-mono mt-0.5 truncate max-w-xl">Source URL / Identifier: {currentVideoId}</p>
