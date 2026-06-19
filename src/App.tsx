@@ -889,9 +889,6 @@ export default function App() {
               {/* Information bar below running video */}
               <div id="player_meta_bar" className="p-4 bg-slate-900 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-in">
                 <div id="active_meta_info" className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span id="playing_status_dot" className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-                  </div>
                   <h2 id="active_video_heading" className="text-sm md:text-base font-bold text-white mt-1.5 leading-snug truncate" title={videoTitle}>{videoTitle}</h2>
                   <p id="active_video_id_tag" className="text-[10px] text-slate-450 font-mono mt-0.5 truncate max-w-xl">Source URL / Identifier: {currentVideoId}</p>
                 </div>
